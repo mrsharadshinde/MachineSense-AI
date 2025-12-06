@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MachineSense AI - Maintenance Report Upload</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-center"> MachineSense AI 🤖</h2>
+        <p class="text-center text-muted">Predictive Maintenance Intelligence</p>
+        <hr>
+
+        <form id="uploadForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label class="form-label"><strong>Upload Maintenance Report PDF</strong></label>
+            <input type="file" name="pdf_file" class="form-control mb-3" accept="application/pdf" required>
+
+            <button id="submitBtn" type="submit" class="btn btn-primary w-100">
+                Process Document
+            </button>
+        </form>
+
+        {% if result %}
+        <hr>
+        <h4>📊 Analysis Result:</h4>
+        <p><b>Risk Level:</b> {{ result.risk }}</p>
+        <p><b>Completeness:</b> {{ result.completeness }}%</p>
+        <p><b>Health Score:</b> {{ result.health }}%</p>
+
+        {% if result.report_url %}
+        <a href="{{ result.report_url }}" class="btn btn-success mt-3" download>
+            ⬇ Download Maintenance Report
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- 🔹 Processing overlay with step-by-step progress -->
+<div id="loadingOverlay"
+     class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center bg-dark bg-opacity-50">
+    <div class="bg-white p-4 rounded shadow text-center" style="max-width: 420px;">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <h5 class="mb-3">Processing document...</h5>
+
+        <p id="step1" class="mb-1 fw-bold">Step 1: Extracting data from PDF...</p>
+        <p id="step2" class="mb-1 text-muted">Step 2: Validating fields & completeness...</p>
+        <p id="step3" class="mb-1 text-muted">Step 3: Analysing risk & health score...</p>
+        <p id="step4" class="mb-0 text-muted">Step 4: Generating AI maintenance report...</p>
+
+        <small class="text-muted d-block mt-2">This may take a few seconds.</small>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("uploadForm");
+    const btn = document.getElementById("submitBtn");
+    const overlay = document.getElementById("loadingOverlay");
+
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const step3 = document.getElementById("step3");
+    const step4 = document.getElementById("step4");
+
+    function activateStep(activeStep) {
+        // reset all to muted
+        [step1, step2, step3, step4].forEach(step => {
+            step.classList.remove("fw-bold");
+            step.classList.add("text-muted");
+        });
+        // highlight active one
+        activeStep.classList.add("fw-bold");
+        activeStep.classList.remove("text-muted");
+    }
+
+    if (form) {
+        form.addEventListener("submit", function () {
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = "Processing...";
+            }
+            if (overlay) {
+                overlay.classList.remove("d-none");
+                overlay.classList.add("d-flex");
+            }
+
+            // Step-by-step simulation
+            activateStep(step1); // immediately
+
+            setTimeout(function () {
+                activateStep(step2);
+            }, 1500);
+
+            setTimeout(function () {
+                activateStep(step3);
+            }, 3000);
+
+            setTimeout(function () {
+                activateStep(step4);
+            }, 4500);
+        });
+    }
+});
+</script>
+
+</body>
+</html>
